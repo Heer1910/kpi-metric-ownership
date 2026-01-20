@@ -347,14 +347,30 @@ class KPIVisualizer:
             cell.set_facecolor(COLOR_PRIMARY)
             cell.set_text_props(weight='bold', color='white', fontsize=LABEL_FONTSIZE)
         
-        # Alternating row colors
+        # Alternating row colors and status coloring
         for i in range(1, len(table_data) + 1):
             for j in range(4):
                 cell = table[(i, j)]
+                
+                # Base row color
                 if i % 2 == 0:
-                    cell.set_facecolor('#f0f0f0')
+                    base_color = '#f0f0f0'
                 else:
-                    cell.set_facecolor('white')
+                    base_color = 'white'
+                
+                # Status column gets special coloring
+                if j == 3:  # Status column
+                    status_text = table_data[i-1][3]
+                    if status_text == "OK":
+                        cell.set_facecolor('#d4edda')  # Light green
+                        cell.set_text_props(weight='bold', color='#155724')
+                    elif status_text == "WARNING":
+                        cell.set_facecolor('#f8d7da')  # Light red
+                        cell.set_text_props(weight='bold', color='#721c24')
+                    else:
+                        cell.set_facecolor(base_color)
+                else:
+                    cell.set_facecolor(base_color)
         
         fig.suptitle('KPI Health Grid', fontsize=TITLE_FONTSIZE + 2, fontweight='bold', y=0.98)
         
@@ -377,34 +393,34 @@ class KPIVisualizer:
             unit: Unit type
             
         Returns:
-            Status symbol (✓ for healthy, ⚠️ for warning)
+            Status text (OK or WARNING)
         """
         # Define threshold checks
         if metric_name == 'small_basket_share':
             # Warning if > 30%
-            return "⚠️" if value > 0.30 else "✓"
+            return "WARNING" if value > 0.30 else "OK"
         
         elif metric_name in ['vpac', 'orders_per_customer', 'items_per_order']:
             # These should be > 0, always healthy if positive
-            return "✓" if value > 0 else "⚠️"
+            return "OK" if value > 0 else "WARNING"
         
         elif metric_name == 'reorder_rate':
             # Healthy if between constraints and reasonably high
             if 0 <= value <= 1 and value >= 0.30:  # At least 30% reorder rate is good
-                return "✓"
+                return "OK"
             else:
-                return "⚠️"
+                return "WARNING"
         
         elif metric_name in ['active_customers', 'total_orders', 'total_items']:
             # Count metrics - always show as healthy if > 0
-            return "✓" if value > 0 else "⚠️"
+            return "OK" if value > 0 else "WARNING"
         
         elif metric_name == 'median_days_since_prior':
             # Healthy if between 1 and 30 days (not too frequent, not too infrequent)
-            return "✓" if 1 <= value <= 30 else "⚠️"
+            return "OK" if 1 <= value <= 30 else "WARNING"
         
         # Default: show as healthy
-        return "✓"
+        return "OK"
     
     
     def plot_segment_comparison(
