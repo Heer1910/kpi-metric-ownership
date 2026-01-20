@@ -102,6 +102,60 @@ class MetricEngine:
         
         return metric_def.compute(user_kpis)
     
+    def compare_periods(
+        self,
+        period1_data: pd.DataFrame,
+        period2_data: pd.DataFrame,
+        metrics: Optional[List[str]] = None
+    ) -> pd.DataFrame:
+        """
+        Compare KPI values between two periods.
+        
+        Args:
+            period1_data: User-level KPI data for period 1 (baseline)
+            period2_data: User-level KPI data for period 2 (comparison)
+            metrics: List of metric names to compare (default: all)
+            
+        Returns:
+            DataFrame with columns:
+            - metric_name
+            - period1_value
+            - period2_value
+            - absolute_change
+            - percent_change
+        """
+        if metrics is None:
+            metrics = list(self.registry.keys())
+        
+        comparisons = []
+        
+        for metric_name in metrics:
+            if metric_name not in self.registry:
+                continue
+            
+            metric_def = self.registry[metric_name]
+            
+            try:
+                p1_value = metric_def.compute(period1_data)
+                p2_value = metric_def.compute(period2_data)
+                
+                abs_change = p2_value - p1_value
+                pct_change = (abs_change / p1_value) if p1_value != 0 else 0.0
+                
+                comparisons.append({
+                    'metric_name': metric_name,
+                    'display_name': metric_def.display_name,
+                    'period1_value': p1_value,
+                    'period2_value': p2_value,
+                    'absolute_change': abs_change,
+                    'percent_change': pct_change,
+                    'unit': metric_def.unit,
+                })
+            except Exception as e:
+                print(f"⚠️  Error comparing {metric_name}: {e}")
+        
+        return pd.DataFrame(comparisons)
+    
     def get_north_star(self) -> Dict[str, Any]:
         """
         Get North Star metric with its components.

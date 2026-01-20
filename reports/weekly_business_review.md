@@ -1,6 +1,6 @@
 # Weekly Business Review
 
-**Generated:** 2026-01-20 15:55
+**Generated:** 2026-01-20 16:54
 
 ---
 
@@ -44,10 +44,9 @@
 
 ## 💡 Key Insights
 
-1. Higher-frequency customers have significantly higher VPAC driven primarily by order frequency.
-2. Power users (11+ orders) represent the highest VPAC segment and contribute disproportionately to total items.
-3. Reorder rate is healthy across all segments, indicating strong product-market fit.
-4. Small basket share is within acceptable thresholds, suggesting good acquisition quality.
+1. Power users drive 80.4% of total orders despite being 47.9% of customers.
+2. Reorder rate at 44.4% indicates strong customer loyalty.
+3. Small basket share is within healthy thresholds, no acquisition quality concerns.
 
 
 ## 🎯 Recommended Actions

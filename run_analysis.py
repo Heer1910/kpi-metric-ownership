@@ -176,6 +176,18 @@ def main() -> int:
             viz.plot_distribution(user_kpis['avg_basket_size'], 'Items per Order', save=True)
             
             log("  ✓ All visualizations saved to figures/", args.quiet)
+            
+            # Generate executive dashboard (2x2 panel)
+            log("\n  Creating executive dashboard...", args.quiet)
+            from src.viz.dashboard import create_executive_dashboard
+            create_executive_dashboard(
+                north_star_info=north_star_info,
+                decomposition=decomposition,
+                segments=segments,
+                metrics_df=metrics_df,
+                save=True
+            )
+            log("  ✓ Executive dashboard created", args.quiet)
         else:
             log("\n[6/8] Skipping visualizations (--skip-viz flag)", args.quiet)
         
