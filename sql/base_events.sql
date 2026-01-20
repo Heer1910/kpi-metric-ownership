@@ -1,10 +1,25 @@
 /*
-Base event extraction for Instacart KPI analysis.
+====================================================================
+BASE EVENT EXTRACTION
+====================================================================
 
-This query creates a user-order-level base table with all necessary dimensions
-for KPI computation.
+Purpose: Extract order-level events with product aggregations
 
-Output grain: one row per order
+Input Tables:
+  - orders (user_id, order_id, order_number, order_dow, order_hour_of_day, days_since_prior_order)
+  - order_products (order_id, product_id, reordered)
+
+Output Table: base_events
+  - Grain: ONE ROW PER ORDER
+  - Columns: order details + aggregated product metrics + derived flags
+
+Key Logic:
+  1. Aggregate items per order from order_products
+  2. Calculate reorder rate as (reordered items / total items)
+  3. Flag small baskets (≤3 items) for quality monitoring
+  4. Join back to orders table for temporal dimensions
+
+Note: days_since_prior_order is NULL for first orders (expected)
 */
 
 WITH order_items_agg AS (
