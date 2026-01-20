@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data files (large CSVs - don't commit to GitHub)
+data/*.csv
+data/*.zip
+data/*.gz
+
+# DuckDB databases
+*.duckdb
+*.db
+
+# Generated outputs (optional - you can commit these to show results)
+# Uncomment the lines below if you DON'T want to commit generated files
+# figures/*.png
+# reports/*.md
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
