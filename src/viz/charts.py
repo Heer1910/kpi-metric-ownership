@@ -321,8 +321,9 @@ class KPIVisualizer:
             else:
                 value_str = f"{value:.2f}"
             
-            # Status (placeholder - would need historical data for real WoW)
-            status = "●"  # Neutral by default
+            # Status based on threshold validation
+            metric_name = row['metric_name']
+            status = self._get_metric_status(metric_name, value, unit)
             
             table_data.append([display_name, value_str, unit, status])
         
@@ -365,6 +366,46 @@ class KPIVisualizer:
             print(f"✓ Saved: {save_path}")
         
         return fig
+    
+    def _get_metric_status(self, metric_name: str, value: float, unit: str) -> str:
+        """
+        Determine status indicator for a metric based on thresholds.
+        
+        Args:
+            metric_name: Name of the metric
+            value: Current value
+            unit: Unit type
+            
+        Returns:
+            Status symbol (✓ for healthy, ⚠️ for warning)
+        """
+        # Define threshold checks
+        if metric_name == 'small_basket_share':
+            # Warning if > 30%
+            return "⚠️" if value > 0.30 else "✓"
+        
+        elif metric_name in ['vpac', 'orders_per_customer', 'items_per_order']:
+            # These should be > 0, always healthy if positive
+            return "✓" if value > 0 else "⚠️"
+        
+        elif metric_name == 'reorder_rate':
+            # Healthy if between constraints and reasonably high
+            if 0 <= value <= 1 and value >= 0.30:  # At least 30% reorder rate is good
+                return "✓"
+            else:
+                return "⚠️"
+        
+        elif metric_name in ['active_customers', 'total_orders', 'total_items']:
+            # Count metrics - always show as healthy if > 0
+            return "✓" if value > 0 else "⚠️"
+        
+        elif metric_name == 'median_days_since_prior':
+            # Healthy if between 1 and 30 days (not too frequent, not too infrequent)
+            return "✓" if 1 <= value <= 30 else "⚠️"
+        
+        # Default: show as healthy
+        return "✓"
+    
     
     def plot_segment_comparison(
         self,
