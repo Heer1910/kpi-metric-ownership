@@ -35,14 +35,16 @@ class InstacartDataLoader:
     - aisles, departments: product categorization
     """
     
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: Optional[str] = None, data_dir: str = "data"):
         """
         Initialize data loader.
         
         Args:
             db_path: Path to DuckDB database file. If None, uses in-memory database.
+            data_dir: Path to directory containing CSV files (default: "data")
         """
         self.db_path = db_path or ":memory:"
+        self.data_dir = Path(data_dir)
         self.conn: Optional[duckdb.DuckDBPyConnection] = None
         self.metadata: Dict[str, Any] = {}
         
@@ -78,18 +80,19 @@ class InstacartDataLoader:
         print("LOADING INSTACART DATASET INTO DUCKDB")
         print("="*70)
         
-        # Define table loading specs
+        # Define table loading specs (filenames only)
         tables_to_load = [
-            ("orders", ORDERS_FILE),
-            ("order_products_prior", ORDER_PRODUCTS_PRIOR_FILE),
-            ("order_products_train", ORDER_PRODUCTS_TRAIN_FILE),
-            ("products", PRODUCTS_FILE),
-            ("aisles", AISLES_FILE),
-            ("departments", DEPARTMENTS_FILE),
+            ("orders", "orders.csv"),
+            ("order_products_prior", "order_products__prior.csv"),
+            ("order_products_train", "order_products__train.csv"),
+            ("products", "products.csv"),
+            ("aisles", "aisles.csv"),
+            ("departments", "departments.csv"),
         ]
         
         # Load each table
-        for table_name, file_path in tables_to_load:
+        for table_name, filename in tables_to_load:
+            file_path = self.data_dir / filename
             self._load_table(table_name, file_path)
             
         # Combine order_products tables for easier analysis
@@ -209,15 +212,19 @@ class InstacartDataLoader:
         return self.execute_sql(query)
 
 
-def quick_load() -> InstacartDataLoader:
+def quick_load(data_dir: str = "data") -> InstacartDataLoader:
     """
     Convenience function to quickly load data and return connected loader.
+    
+    Args:
+        data_dir: Path to directory containing CSV files (default: "data")
     
     Usage:
         >>> loader = quick_load()
         >>> df = loader.execute_sql("SELECT * FROM orders LIMIT 10")
     """
-    loader = InstacartDataLoader()
+    loader = InstacartDataLoader(data_dir=data_dir)
     loader.connect()
     loader.load_all_tables()
     return loader
+
