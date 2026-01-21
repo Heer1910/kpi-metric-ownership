@@ -1,87 +1,95 @@
 # KPI Framework & Metric Ownership
 
-Production KPI system with North Star decomposition, customer segmentation, and automated reporting.
+Production KPI system for growth analytics. Tracks North Star (VPAC) with driver decomposition, customer segmentation, and automated reporting.
 
-**Target use case:** Weekly business review for product and growth teams  
-**Dataset:** Instacart Market Basket (206K customers, 3.4M orders)  
-**Tech stack:** Python, SQL (DuckDB), matplotlib/seaborn
+**Business Context:** Grocery marketplace (Instacart-like) with 206K customers and 3.4M orders. No revenue data available, so VPAC proxies value through order frequency × basket size.
+
+**North Star:** VPAC = 162 items/customer (Orders per Customer × Items per Order)
+
+**Key Findings:**
+- Power users (11+ orders) are 41% of customers but drive **82% of orders** — retention is the primary lever
+- Reorder rate at 44% indicates strong product-market fit
+- Small basket share at 18% confirms acquisition quality is healthy
+
+**Decision:** Focus retention initiatives on moving occasional users (2-4 orders) to power user status. Every 1-point increase in orders/customer drives ~10 points of VPAC.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Clone or download this repo
-cd kpi-metric-ownership
-
-# Install dependencies
+# Setup
 pip install -r requirements.txt
 
-# Download Instacart dataset from Kaggle
-# https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis
-# Extract CSVs to data/
-
-# Run the analysis
+# Run analysis (generates all KPIs and visuals)
 python run_analysis.py
 
 # Results saved to figures/ and reports/
 ```
 
-**Runtime:** ~60 seconds on standard laptop
+**Runtime:** ~60 seconds
 
 ---
 
-## Results Overview
+## Key Artifacts
 
-### North Star: VPAC (Value per Active Customer)
+**Executive Dashboard:**  
+[`figures/00_executive_dashboard.png`](figures/00_executive_dashboard.png) - 2x2 view with metric tree, waterfall, segments, KPI summary
 
-| Metric | Value | Interpretation |
-|--------|-------|----------------|
-| **VPAC** | **162.02** items/customer | Customers purchase 16 orders × 10 items on average |
-| Orders/Customer | 16.23 | Strong repeat purchase behavior |
-| Items/Order | 9.98 | Healthy basket size |
+**Business Review:**  
+[`reports/weekly_business_review.md`](reports/weekly_business_review.md) - Automated weekly memo with insights
 
-### Customer Segmentation
+**Visualizations:**
+- [`01_metric_tree.png`](figures/01_metric_tree.png) - North Star breakdown
+- [`02_vpac_waterfall.png`](figures/02_vpac_waterfall.png) - Driver attribution
+- [`03_segment_comparison.png`](figures/03_segment_comparison.png) - Customer cohorts
+- [`04_kpi_health_grid.png`](figures/04_kpi_health_grid.png) - Status dashboard
 
-| Segment | Customers | Orders | VPAC | Share of Orders |
-|---------|-----------|--------|------|-----------------|
-| Power Users (11+) | 41% | 82% | ~300 | Drives most volume |
-| Regular (5-10) | 18% | 12% | ~110 | Growth opportunity |
-| Occasional (2-4) | 21% | 5% | ~40 | Retention risk |
-| One-time | 20% | 1% | ~10 | Failed onboarding |
-
-**Key finding:** Top 41% of customers generate 82% of orders — retention is the critical lever.
-
-### Health Check
-
-| Guardrail Metric | Value | Status | Threshold |
-|------------------|-------|--------|-----------|
-| Reorder Rate | 44.4% | ✓ OK | >30% (loyalty indicator) |
-| Small Basket Share | 18.5% | ✓ OK | <30% (quality bar) |
-| Median Days Between Orders | 14.8 days | ✓ OK | 1-30 days |
-
-All guardrails passing — no major quality or engagement concerns.
+**Documentation:**
+- [`docs/metric_dictionary.md`](docs/metric_dictionary.md) - Complete metric specs
+- [`docs/kpi_playbook.md`](docs/kpi_playbook.md) - How to use metrics operationally
+- [`docs/architecture.md`](docs/architecture.md) - Technical deep dive
 
 ---
 
-## What This Project Shows
+## Results Summary
+
+| Metric | Value | Status | Insight |
+|--------|-------|--------|---------|
+| **VPAC** | **162.02** | ✓ | Driven by frequency (16 orders/customer) |
+| Active Customers | 206,209 | ✓ | Full dataset |
+| Orders/Customer | 16.23 | ✓ | **Primary driver** of VPAC |
+| Items/Order | 9.98 | ✓ | Secondary lever |
+| Reorder Rate | 44.4% | ✓ | Strong loyalty signal |
+| Small Basket Share | 18.5% | ✓ | Below 30% threshold |
+
+**Segment Breakdown:**
+
+| Segment | Customers | Share of Orders | VPAC | Action |
+|---------|-----------|-----------------|------|--------|
+| Power Users (11+) | 41% | 82% | ~300 | Retain at all costs |
+| Regular (5-10) | 18% | 12% | ~110 | Upsell to power |
+| Occasional (2-4) | 21% | 5% | ~40 | **Retention opportunity** |
+| One-time | 20% | 1% | ~10 | Fix onboarding |
+
+---
+
+## What This Shows
 
 **For Analytics Roles:**
 - Metric system design (North Star → drivers → guardrails)
-- Decomposition algebra (attributing changes to root causes)
-- Threshold-based monitoring (not just tracking, but validating)
-- Segment analysis with actionable results
+- Driver decomposition with validated attribution
+- Threshold-based monitoring (not just tracking)
 
-**For Eng/Tech:**
-- OOP Python (8 classes: MetricEngine, VPACDecomposer, DataQualityChecker, etc.)
-- SQL proficiency (DuckDB with CTEs, window functions)
-- Automated testing (pytest with edge cases)
-- CLI design (args parsing, error handling, exit codes)
+**For Tech Roles:**
+- Production Python (OOP, type hints, error handling)
+- SQL proficiency (DuckDB, CTEs, aggregations)
+- CLI design with proper arg parsing
 
-**For Business/Product:**
-- Executive reporting (weekly review memos, visual storytelling)
-- KPI ownership mapping (who reviews what, when)
-- Operational playbook (what to do when metrics move)
+**For Product/Business:**
+- Weekly business review automation
+- KPI ownership mapping
+- Operational playbook for metric movements
 
 ---
 
@@ -89,89 +97,34 @@ All guardrails passing — no major quality or engagement concerns.
 
 ```
 kpi-metric-ownership/
-├── run_analysis.py          # Main entry point (CLI)
-├── src/
-│   ├── io/                  # DuckDB data loading
-│   ├── metrics/             # MetricDefinition, MetricEngine
-│   ├── quality/             # DataQualityChecker
-│   ├── analysis/            # VPACDecomposer, CustomerSegmentation
-│   ├── viz/                 # KPIVisualizer (5 charts)
-│   └── reporting/           # KPIReportBuilder
-├── sql/
-│   ├── base_events.sql              # Order-level extraction
-│   ├── kpi_user_aggregates.sql      # User-level KPIs
-│   └── kpi_overall_summary.sql      # Company-wide summary
-├── tests/
-│   ├── test_metrics.py              # Metric computation tests
-│   └── test_decomposition.py        # Driver attribution validation
-├── docs/
-│   ├── metric_dictionary.md         # Complete metric specs
-│   └── kpi_playbook.md              # Operational guide
-├── figures/                 # Generated visualizations
-└── reports/                 # Weekly business reviews
+├── run_analysis.py          # Main entry point
+├── src/                     # Core modules (8 Python files)
+│   ├── metrics/            # MetricEngine, definitions
+│   ├── analysis/           # VPACDecomposer, segmentation
+│   ├── viz/                # Charts + executive dashboard
+│   └── reporting/          # Weekly review generator
+├── sql/                     # DuckDB queries (3 files)
+├── tests/                   # Unit tests (20 passing)
+├── docs/                    # Metric dictionary, playbook, architecture
+├── figures/                 # Generated visuals
+└── reports/                 # Generated business reviews
 ```
+
+See [`docs/architecture.md`](docs/architecture.md) for detailed component documentation.
 
 ---
 
-## Core Components
+## Testing
 
-### 1. Metric Definition System
+```bash
+pytest tests/ -v
 
-Every metric has:
-- Formula (algebraic)
-- Computation function (Python)
-- Owner (team responsible)
-- Thresholds (for validation)
-- Review cadence (weekly, bi-weekly)
-
-Example:
-```python
-MetricDefinition(
-    name='vpac',
-    formula='Orders per Customer × Items per Order',
-    owner='Product Growth',
-    thresholds={'min': 0},
-    review_cadence='Weekly'
-)
+# 20 tests passing:
+# - Metric computation accuracy
+# - Decomposition validation (components sum to total)
+# - Edge cases (single customer, extreme values, NULL handling)
+# - Threshold logic
 ```
-
-See [`docs/metric_dictionary.md`](docs/metric_dictionary.md) for all 9 metrics.
-
-### 2. Driver Decomposition
-
-VPAC changes are automatically attributed to drivers:
-
-```
-Δ VPAC = (Δ Orders/Customer × avg Items/Order) 
-       + (avg Orders/Customer × Δ Items/Order) 
-       + Interaction term
-```
-
-The decomposition is validated (components must sum to total change within 1%).
-
-### 3. Data Quality Framework
-
-Automated checks:
-- Null rates (flag if >5%)
-- Range validation (counts ≥0, rates in [0,1])
-- Monotonic relationships (orders ≥ customers)
-- Outlier detection (z-score method)
-
-Runs on every execution. Warnings don't block, errors do.
-
-### 4. Visualizations
-
-All charts use matplotlib/seaborn (professional, clean):
-
-| File | Description |
-|------|-------------|
-| `01_metric_tree.png` | North Star → drivers hierarchy |
-| `02_vpac_waterfall.png` | Driver attribution (what moved) |
-| `03_segment_comparison.png` | Customer cohorts |
-| `04_kpi_health_grid.png` | Status dashboard |
-| `05_dist_*.png` | Metric distributions |
-
-Figures saved to `figures/` automatically.
 
 ---
 
@@ -180,141 +133,53 @@ Figures saved to `figures/` automatically.
 ```bash
 python run_analysis.py              # Full analysis
 python run_analysis.py --quiet      # Minimal output
-python run_analysis.py --skip-viz   # Faster (no charts)
-python run_analysis.py --help       # See all options
+python run_analysis.py --skip-viz   # Skip charts (faster)
+python run_analysis.py --help       # All options
 ```
 
-Exit codes:
-- `0` = success
-- `1` = general error
-- `130` = user interrupt
+---
+
+## Design Decisions
+
+**Why VPAC (not revenue)?**  
+Instacart dataset has no prices. VPAC = items/customer is directionally correlated with revenue and uses metrics product teams actually control (frequency × depth).
+
+**Why snapshot (not time-series)?**  
+Dataset is point-in-time. For WoW trends, we simulate by comparing customer cohorts (power users vs occasional). In production, this would use real time windows.
+
+**Why DuckDB (not BigQuery)?**  
+Local execution, no cloud credentials needed. Uses BigQuery-compatible SQL syntax for easy migration.
 
 ---
 
-## Testing
+## Tech Stack
 
-```bash
-# Run all tests
-pytest tests/ -v
+- **Python 3.9+** - OOP design, type hints, dataclasses
+- **DuckDB** - In-memory SQL analytics (BigQuery syntax)
+- **matplotlib/seaborn** - Professional visualizations
+- **pytest** - Test coverage with edge cases
 
-# Run specific test file
-pytest tests/test_metrics.py -v
-```
-
-Tests cover:
-- Metric computation accuracy
-- Decomposition validation (components sum correctly)
-- Edge cases (empty data, single customer)
-- Threshold logic
+**Dependencies:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `duckdb`, `pytest`
 
 ---
 
-## Limitations & Design Decisions
+## Limitations
 
-### No Revenue Data
+- No revenue data → VPAC is a proxy (directionally correlated)
+- Snapshot dataset → can't compute true WoW trends
+- ~6% NULL values in `days_since_prior_order` (expected for first orders)
 
-Instacart doesn't include prices. We use **VPAC** (items/customer) as a value proxy.
-
-**Why this works:**
-- Items ordered ≈ revenue (directionally correlated)
-- Same decomposition logic applies
-- Common pattern when direct revenue unavailable
-
-**Interview talking point:**
-> "When revenue isn't available, you proxy with units. VPAC captures frequency × depth, which are the levers product teams actually control."
-
-### Snapshot vs Time Series
-
-The dataset is a point-in-time snapshot, not a time series.
-
-**Implications:**
-- Can't compute true week-over-week trends
-- Simulated comparisons (power users vs occasional) instead
-- Status indicators use thresholds, not deltas
-
-**If this were production:**
-- Add timestamps to orders table
-- Implement rolling window aggregations
-- Enable trend detection and anomaly flagging
-
-### Missing Values in `days_since_prior_order`
-
-First orders have NULL values (6.3% of dataset) — this is expected.
-
-Handled by:
-- Validation flags it as a warning (not error)
-- Computation uses `AVG()` which skips NULLs
-- Documented in metric dictionary
-
----
-
-## Documentation
-
-| File | Purpose |
-|------|---------|
-| `README.md` (this file) | Project overview, quick start |
-| `docs/metric_dictionary.md` | Complete metric specs (formulas, owners, thresholds) |
-| `docs/kpi_playbook.md` | Operational guide (how to interpret movements, what actions to take) |
-
-All docs follow single-source-of-truth principle — no duplicated definitions.
-
----
-
-## Skills Demonstrated
-
-**SQL:**
-- Complex aggregations (user-level rollups)
-- CTEs for readability
-- Properly documented queries (inputs, outputs, grain)
-
-**Python OOP:**
-- Clean class design (8 classes with clear responsibilities)
-- Type hints throughout
-- Comprehensive docstrings
-
-**Data Engineering:**
-- DuckDB for local analytics (BigQuery-compatible syntax)
-- Automated validation pipelines
-- Exit codes and error handling
-
-**Business Communication:**
-- Metric ownership matrix
-- Executive summaries (weekly review memos)
-- Playbooks for non-technical stakeholders
-
-**Production Practices:**
-- Centralized config (no magic numbers)
-- Modular architecture (easy to extend)
-- Automated testing
-- CLI interface with proper arg parsing
-
----
-
-## Next Steps (If Extending)
-
-1. **Add time-series support** → compute real WoW/MoM trends
-2. **Implement alerting** → email/Slack when thresholds breach
-3. **Export to BI tool** → Tableau/Looker dashboard
-4. **Add category decomposition** → which departments drive VPAC
-5. **Cohort retention analysis** → track how segments evolve
-
----
-
-## References
-
-- **Dataset:** [Instacart Market Basket Analysis (Kaggle)](https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis)
-- **Decomposition method:** Midpoint attribution (symmetric driver analysis)
-- **Visualization:** matplotlib 3.7+ / seaborn 0.12+
+All limitations documented in metric dictionary with business justification.
 
 ---
 
 ## Contact
 
 **Author:** Heer Patel  
-**Target roles:** Product Analyst, Business Analyst, Data Analyst  
-**Portfolio context:** Finance major + Marketing minor at Texas A&M
+**Target Roles:** Product Analyst, Business Analyst, Data Analyst  
+**Background:** Finance + Marketing at Texas A&M
 
-Questions or feedback? Open an issue or reach out directly.
+**Repo:** https://github.com/Heer1910/kpi-metric-ownership
 
 ---
 
