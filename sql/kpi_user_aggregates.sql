@@ -66,6 +66,7 @@ Dependencies: base_events table must exist
 Used By: kpi_overall_summary.sql, Python MetricEngine
 */
 
+CREATE TABLE IF NOT EXISTS user_kpis AS
 WITH base_orders AS (
     SELECT * FROM base_events
 ),
@@ -85,8 +86,6 @@ user_aggregates AS (
     GROUP BY user_id
 )
 
--- Create persistent table
-CREATE TABLE IF NOT EXISTS user_kpis AS
 SELECT
     user_id,
     total_orders AS orders,
@@ -116,3 +115,4 @@ SELECT
     
 FROM user_aggregates
 ORDER BY user_id;
+

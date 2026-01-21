@@ -50,6 +50,7 @@ Dependencies: orders, order_products tables must exist
 Used By: kpi_user_aggregates.sql
 */
 
+CREATE TABLE IF NOT EXISTS base_events AS
 WITH order_items_agg AS (
     -- Aggregate order-level metrics from line items
     SELECT
@@ -85,8 +86,6 @@ order_with_products AS (
     INNER JOIN order_items_agg oi ON o.order_id = oi.order_id
 )
 
--- Create persistent table for reuse
-CREATE TABLE IF NOT EXISTS base_events AS
 SELECT
     order_id,
     user_id,
@@ -101,3 +100,4 @@ SELECT
     is_small_basket
 FROM order_with_products
 ORDER BY user_id, order_number;
+

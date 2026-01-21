@@ -1,11 +1,11 @@
 # KPI Metrics
 
-| metric_name             | display_name                     | metric_type   |         value | unit            | owner                | formula                               |
-|:------------------------|:---------------------------------|:--------------|--------------:|:----------------|:---------------------|:--------------------------------------|
-| vpac                    | Value per Active Customer (VPAC) | north_star    |    162.016    | items/customer  | Product Growth Lead  | orders_per_customer × items_per_order |
-| active_customers        | Active Customers                 | driver        | 206209        | customers       | Marketing Lead       | COUNT(DISTINCT user_id)               |
-| orders_per_customer     | Orders per Customer              | driver        |     16.2267   | orders/customer | Retention PM         | AVG(orders)                           |
-| items_per_order         | Items per Order                  | driver        |      9.98453  | items/order     | Merchandising PM     | AVG(avg_basket_size)                  |
-| reorder_rate            | Reorder Rate                     | guardrail     |      0.444332 | rate            | Retention PM         | AVG(reorder_rate)                     |
-| small_basket_share      | Small Basket Share               | guardrail     |      0.184944 | rate            | Product Quality Lead | AVG(small_basket_share)               |
-| median_days_since_prior | Median Days Between Orders       | guardrail     |     14.8      | days            | Retention PM         | MEDIAN(median_days_since_prior)       |
+| metric_name             | display_name                     | metric_type   | tier   |         value | unit            | owner                | owner_role    | formula                               | directionality   | status   |
+|:------------------------|:---------------------------------|:--------------|:-------|--------------:|:----------------|:---------------------|:--------------|:--------------------------------------|:-----------------|:---------|
+| vpac                    | Value per Active Customer (VPAC) | north_star    | P0     |    162.016    | items/customer  | Product Growth Lead  | Growth        | orders_per_customer × items_per_order | higher_is_better | OK       |
+| active_customers        | Active Customers                 | driver        | P0     | 206209        | customers       | Marketing Lead       | Growth        | COUNT(DISTINCT user_id)               | higher_is_better | OK       |
+| orders_per_customer     | Orders per Customer              | driver        | P0     |     16.2267   | orders/customer | Retention PM         | Lifecycle     | AVG(orders)                           | higher_is_better | OK       |
+| items_per_order         | Items per Order                  | driver        | P0     |      9.98453  | items/order     | Merchandising PM     | Merchandising | AVG(avg_basket_size)                  | higher_is_better | OK       |
+| reorder_rate            | Reorder Rate                     | guardrail     | P1     |      0.444332 | rate            | Retention PM         | Lifecycle     | AVG(reorder_rate)                     | higher_is_better | OK       |
+| small_basket_share      | Small Basket Share               | guardrail     | P1     |      0.184944 | rate            | Product Quality Lead | Product       | AVG(small_basket_share)               | lower_is_better  | OK       |
+| median_days_since_prior | Median Days Between Orders       | guardrail     | P2     |     14.8      | days            | Retention PM         | Lifecycle     | MEDIAN(median_days_since_prior)       | lower_is_better  | OK       |
