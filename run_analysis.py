@@ -372,7 +372,7 @@ def main() -> int:
             print(f"\nKey Findings:")
             print(f"  VPAC: {north_star_info['value']:.2f} items/customer")
             print(f"  Active Customers: {metrics_df[metrics_df['metric_name']=='active_customers']['value'].values[0]:,.0f}")
-            print(f"  Data Quality: {len([r for r in results if r.status == 'PASS'])} checks passed")
+            print(f"  Data Quality: {len([r for r in results if r.passed])} checks passed")
         
         return 0
         
