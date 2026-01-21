@@ -19,12 +19,10 @@ Production KPI system for growth analytics. Tracks North Star (VPAC) with driver
 
 ```bash
 # Setup
-pip install -r requirements.txt
+make setup
 
 # Run analysis (generates all KPIs and visuals)
-python run_analysis.py
-
-# Results saved to figures/ and reports/
+make run
 ```
 
 **Runtime:** ~60 seconds
@@ -98,6 +96,7 @@ python run_analysis.py
 ```
 kpi-metric-ownership/
 ├── run_analysis.py          # Main entry point
+├── Makefile                 # Simple commands (make setup, make run)
 ├── src/                     # Core modules (8 Python files)
 │   ├── metrics/            # MetricEngine, definitions
 │   ├── analysis/           # VPACDecomposer, segmentation
@@ -117,7 +116,7 @@ See [`docs/architecture.md`](docs/architecture.md) for detailed component docume
 ## Testing
 
 ```bash
-pytest tests/ -v
+make test
 
 # 20 tests passing:
 # - Metric computation accuracy
