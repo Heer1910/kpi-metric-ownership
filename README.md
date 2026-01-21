@@ -15,20 +15,6 @@ Production KPI system for growth analytics. Tracks North Star (VPAC) with driver
 
 ---
 
-## Quick Start
-
-```bash
-# Setup
-make setup
-
-# Run analysis (generates all KPIs and visuals)
-make run
-```
-
-**Runtime:** ~60 seconds
-
----
-
 ## Key Artifacts
 
 **Executive Dashboard:**  
