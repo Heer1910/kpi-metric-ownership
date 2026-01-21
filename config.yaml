@@ -1,0 +1,60 @@
+# KPI Framework Configuration
+# Optional YAML configuration file for customization
+
+# Project paths (override defaults if needed)
+project:
+  week_start_day: 0  # Monday = 0
+  review_lookback_weeks: 8
+
+# Metric definitions and thresholds
+metrics:
+  # North Star
+  north_star_metric: "VPAC"
+  north_star_formula: "orders_per_customer * items_per_order"
+  
+  # Thresholds
+  small_basket_threshold: 3  # items
+  anomaly_z_threshold: 2.5   # standard deviations
+  wow_good_threshold: 0.02   # +2% is good
+  wow_bad_threshold: -0.02   # -2% is bad
+  
+  # Quality
+  max_missing_rate: 0.05     # 5% max NULL values
+  decomposition_tolerance: 0.01  # 1% tolerance
+  min_sample_size: 100
+
+# Visualization styling
+viz:
+  # Colors (hexadecimal)
+  color_positive: "#2ecc71"  # green
+  color_negative: "#e74c3c"  # red
+  color_neutral: "#95a5a6"   # grey
+  color_primary: "#3498db"   # blue
+  color_secondary: "#9b59b6" # purple
+  
+  # Figure sizes (width, height) in inches
+  figsize_standard: [12, 6]
+  figsize_wide: [14, 6]
+  figsize_tall: [10, 8]
+  figsize_square: [10, 10]
+  
+  # Font sizes (points)
+  title_fontsize: 14
+  label_fontsize: 11
+  tick_fontsize: 10
+  
+  # DPI for saved figures
+  dpi: 300
+
+# Environment-specific settings
+# Set KPI_ENV environment variable to: DEV, CI, or PROD
+# Defaults: DEV
+# 
+# CI overrides:
+#   - dpi: 150
+#   - figsize_standard: [10, 5]
+#   - min_sample_size: 50
+#
+# PROD overrides:
+#   - max_missing_rate: 0.02
+#   - decomposition_tolerance: 0.005
