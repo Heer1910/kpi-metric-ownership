@@ -6,30 +6,7 @@ Production KPI system with North Star decomposition, customer segmentation, and 
 **Dataset:** Instacart Market Basket (206K customers, 3.4M orders)  
 **Tech stack:** Python, SQL (DuckDB), matplotlib/seaborn
 
----
-
-## Quick Start
-
-```bash
-# Clone or download this repo
-cd kpi-metric-ownership
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Download Instacart dataset from Kaggle
-# https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis
-# Extract CSVs to data/
-
-# Run the analysis
-python run_analysis.py
-
-# Results saved to figures/ and reports/
-```
-
-**Runtime:** ~60 seconds on standard laptop
-
----
+--- 
 
 ## Results Overview
 
@@ -290,16 +267,6 @@ All docs follow single-source-of-truth principle — no duplicated definitions.
 
 ---
 
-## Next Steps (If Extending)
-
-1. **Add time-series support** → compute real WoW/MoM trends
-2. **Implement alerting** → email/Slack when thresholds breach
-3. **Export to BI tool** → Tableau/Looker dashboard
-4. **Add category decomposition** → which departments drive VPAC
-5. **Cohort retention analysis** → track how segments evolve
-
----
-
 ## References
 
 - **Dataset:** [Instacart Market Basket Analysis (Kaggle)](https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis)
@@ -312,9 +279,7 @@ All docs follow single-source-of-truth principle — no duplicated definitions.
 
 **Author:** Heer Patel  
 **Target roles:** Product Analyst, Business Analyst, Data Analyst  
-**Portfolio context:** Finance major + Marketing minor at Texas A&M
-
-Questions or feedback? Open an issue or reach out directly.
+**Portfolio context:** Finance major + Marketing minor
 
 ---
 
