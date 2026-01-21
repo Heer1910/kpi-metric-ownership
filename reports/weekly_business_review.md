@@ -1,6 +1,6 @@
 # Weekly Business Review
 
-**Generated:** 2026-01-20 22:14
+**Generated:** 2026-01-20 22:18
 
 ---
 
@@ -8,7 +8,7 @@
 
 **North Star Metric: VPAC** = 162.02
 
-*Orders per Customer × Items per Order*
+*orders_per_customer × items_per_order*
 
 ### Components
 
@@ -31,15 +31,13 @@
 
 | Metric | Value | Unit | Owner |
 |--------|-------|------|-------|
-| Value per Active Customer (VPAC) | 162.02 | items/customer | Product Growth |
-| Active Customers | 206,209 | customers | Marketing / Acquisition |
-| Orders per Customer | 16.23 | orders/customer | Product / Retention |
-| Items per Order | 9.98 | items/order | Product / Merchandising |
-| Total Orders | 3,346,083 | orders | Product Growth |
-| Total Items | 33,819,106 | items | Product Growth |
-| Reorder Rate | 44.4% | rate | Product / Retention |
-| Small Basket Share | 18.5% | rate | Product Quality |
-| Median Days Between Orders | 14.80 | days | Product / Retention |
+| Value per Active Customer (VPAC) | 162.02 | items/customer | Product Growth Lead |
+| Active Customers | 206,209 | customers | Marketing Lead |
+| Orders per Customer | 16.23 | orders/customer | Retention PM |
+| Items per Order | 9.98 | items/order | Merchandising PM |
+| Reorder Rate | 44.4% | rate | Retention PM |
+| Small Basket Share | 18.5% | rate | Product Quality Lead |
+| Median Days Between Orders | 14.80 | days | Retention PM |
 
 
 ## 💡 Key Insights

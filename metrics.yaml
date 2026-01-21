@@ -1,0 +1,130 @@
+# Metric Definitions (Optional YAML Catalog)
+# 
+# This file is OPTIONAL - if not present, metrics load from src/metrics/definitions.py
+# Use this for centralized metric governance across teams
+
+metrics:
+  vpac:
+    display_name: "Value per Active Customer (VPAC)"
+    grain: "overall"
+    metric_type: "north_star"
+    formula: "orders_per_customer × items_per_order"
+    unit: "items/customer"
+    description: "Total items ordered per active customer (North Star metric)"
+    
+    # Governance
+    owner: "Product Growth Lead"
+    owner_role: "Growth"
+    tier: "P0"  # P0=Executive, P1=Leadership, P2=Operational, P3=Diagnostic
+    refresh_cadence: "daily"  # realtime, hourly, daily, weekly, monthly
+    directionality: "higher_is_better"  # higher_is_better, lower_is_better, neutral
+    review_cadence: "daily"
+    
+    # Validation
+    thresholds:
+      min: 0
+      warn_min: 100
+    
+    dependencies:
+      - orders_per_customer
+      - items_per_order
+  
+  orders_per_customer:
+    display_name: "Orders per Customer"
+    grain: "user"
+    metric_type: "driver"
+    formula: "AVG(orders)"
+    unit: "orders/customer"
+    description: "Average number of orders per customer (frequency)"
+    
+    owner: "Retention PM"
+    owner_role: "Lifecycle"
+    tier: "P0"
+    refresh_cadence: "weekly"
+    directionality: "higher_is_better"
+    review_cadence: "weekly"
+    
+    thresholds:
+      min: 1
+  
+  items_per_order:
+    display_name: "Items per Order"
+    grain: "user"
+    metric_type: "driver"
+    formula: "AVG(avg_basket_size)"
+    unit: "items/order"
+    description: "Average items per order (basket depth)"
+    
+    owner: "Merchandising PM"
+    owner_role: "Merchandising"
+    tier: "P0"
+    refresh_cadence: "weekly"
+    directionality: "higher_is_better"
+    review_cadence: "weekly"
+    
+    thresholds:
+      min: 1
+  
+  reorder_rate:
+    display_name: "Reorder Rate"
+    grain: "user"
+    metric_type: "guardrail"
+    formula: "AVG(reorder_rate)"
+    unit: "rate"
+    description: "% of items that are reorders (loyalty indicator)"
+    
+    owner: "Retention PM"
+    owner_role: "Lifecycle"
+    tier: "P1"
+    refresh_cadence: "weekly"
+    directionality: "higher_is_better"
+    review_cadence: "weekly"
+    
+    thresholds:
+      min: 0
+      max: 1
+      warn_min: 0.30
+  
+  small_basket_share:
+    display_name: "Small Basket Share"
+    grain: "user"
+    metric_type: "guardrail"
+    formula: "AVG(small_basket_share)"
+    unit: "rate"
+    description: "% of orders with ≤3 items (quality flag)"
+    
+    owner: "Product Quality Lead"
+    owner_role: "Product"
+    tier: "P1"
+    refresh_cadence: "weekly"
+    directionality: "lower_is_better"
+    review_cadence: "weekly"
+    
+    thresholds:
+      min: 0
+      max: 1
+      warn_max: 0.30
+
+# Governance Guidelines:
+#
+# Tiers:
+#   P0 = Executive dashboard (North Star + key drivers)
+#   P1 = Leadership review (guardrails + health metrics)
+#   P2 = Operational monitoring (diagnostic metrics)
+#   P3 = Deep dive only (exploratory metrics)
+#
+# Owner Roles:
+#   - Growth: Acquisition and activation
+#   - Lifecycle: Retention and engagement
+#   - Merchandising: Product catalog and basket optimization
+#   - Product: Platform health and quality
+#
+# Refresh Cadence:
+#   - Daily: Critical executive metrics
+#   - Weekly: Most operational metrics
+#   - Monthly: Strategic metrics
+#
+# Directionality:
+#   - higher_is_better: Revenue, customers, frequency
+#   - lower_is_better: Churn, costs, days between orders
+#   - neutral: Ratios without clear direction
