@@ -99,31 +99,6 @@ See [`docs/architecture.md`](docs/architecture.md) for detailed component docume
 
 ---
 
-## Testing
-
-```bash
-make test
-
-# 20 tests passing:
-# - Metric computation accuracy
-# - Decomposition validation (components sum to total)
-# - Edge cases (single customer, extreme values, NULL handling)
-# - Threshold logic
-```
-
----
-
-## CLI Options
-
-```bash
-python run_analysis.py              # Full analysis
-python run_analysis.py --quiet      # Minimal output
-python run_analysis.py --skip-viz   # Skip charts (faster)
-python run_analysis.py --help       # All options
-```
-
----
-
 ## Design Decisions
 
 **Why VPAC (not revenue)?**  
@@ -162,7 +137,6 @@ All limitations documented in metric dictionary with business justification.
 
 **Author:** Heer Patel  
 **Target Roles:** Product Analyst, Business Analyst, Data Analyst  
-**Background:** Finance + Marketing at Texas A&M
 
 **Repo:** https://github.com/Heer1910/kpi-metric-ownership
 
