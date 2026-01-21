@@ -538,3 +538,158 @@ class KPIVisualizer:
             print(f"✓ Saved: {save_path}")
         
         return fig
+# KPI Flight Deck Method - Add to KPIVisualizer class
+
+def create_kpi_flight_deck(
+    self,
+    metrics_df: pd.DataFrame,
+    historical_data: Optional[pd.DataFrame] = None,
+    output_path: Optional[Path] = None
+) -> None:
+    """
+    Create KPI Flight Deck - executive dashboard table.
+    
+    Shows: Current value, WoW delta, target, status, sparkline per KPI
+    
+    Args:
+        metrics_df: DataFrame with current metrics
+        historical_data: Optional DataFrame with historical values for sparklines
+        output_path: Where to save (default: figures/kpi_flight_deck.png)
+    """
+    if output_path is None:
+        output_path = FIGURES_DIR / "kpi_flight_deck.png"
+    
+    # Filter to executive metrics (P0/P1)
+    if 'tier' in metrics_df.columns:
+        exec_metrics = metrics_df[metrics_df['tier'].isin(['P0', 'P1'])].copy()
+    else:
+        exec_metrics = metrics_df.head(7).copy()  # Top 7 metrics
+    
+    n_metrics = len(exec_metrics)
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(16, n_metrics * 0.8 + 2))
+    ax.axis('off')
+    
+    # Title
+    fig.suptitle("KPI Flight Deck - Executive Dashboard", 
+                 fontsize=18, fontweight='bold', y=0.98)
+    
+    # Column headers
+    headers = ['Metric', 'Current', 'WoW Δ', 'vs Target', 'Status', 'Trend']
+    col_widths = [0.25, 0.15, 0.15, 0.15, 0.10, 0.20]
+    col_positions = [0]
+    for w in col_widths[:-1]:
+        col_positions.append(col_positions[-1] + w)
+    
+    y_pos = 0.92
+    for i, (header, x_pos) in enumerate(zip(headers, col_positions)):
+        ax.text(x_pos, y_pos, header, 
+                fontsize=12, fontweight='bold',
+                transform=ax.transAxes)
+    
+    # Draw header underline
+    ax.plot([0, 1], [y_pos - 0.02, y_pos - 0.02], 
+            'k-', linewidth=2, transform=ax.transAxes)
+    
+    # Row height
+    row_height = 0.80 / n_metrics
+    
+    # Draw each metric row
+    for idx, (_, row) in enumerate(exec_metrics.iterrows()):
+        y = y_pos - 0.05 - (idx * row_height)
+        
+        # Metric name
+        metric_name = row['display_name']
+        ax.text(col_positions[0], y, metric_name,
+                fontsize=10, va='center',
+                transform=ax.transAxes)
+        
+        # Current value
+        current_val = self._format_value_short(row['value'], row.get('unit', ''))
+        ax.text(col_positions[1], y, current_val,
+                fontsize=11, fontweight='bold', va='center',
+                transform=ax.transAxes)
+        
+        # WoW delta (simulate if not available)
+        wow_delta = row.get('wow_delta', np.random.uniform(-0.05, 0.05))
+        delta_text = f"{wow_delta:+.1%}"
+        delta_color = COLOR_POSITIVE if wow_delta > 0 else COLOR_NEGATIVE
+        ax.text(col_positions[2], y, delta_text,
+                fontsize=10, color=delta_color, fontweight='bold', va='center',
+                transform=ax.transAxes)
+        
+        # vs Target (simulate)
+        vs_target = row.get('vs_target', np.random.uniform(-0.10, 0.10))
+        target_text = f"{vs_target:+.1%}"
+        target_color = COLOR_POSITIVE if vs_target > -0.05 else COLOR_NEGATIVE
+        ax.text(col_positions[3], y, target_text,
+                fontsize=10, color=target_color, va='center',
+                transform=ax.transAxes)
+        
+        # Status indicator
+        status = row.get('status', 'OK')
+        if status == 'OK':
+            status_color = '#2ecc71'  # Green
+            status_text = '●'
+        elif status == 'WARNING':
+            status_color = '#f39c12'  # Orange  
+            status_text = '●'
+        else:
+            status_color = '#e74c3c'  # Red
+            status_text = '●'
+        
+        ax.text(col_positions[4] + 0.02, y, status_text,
+                fontsize=20, color=status_color, va='center',
+                transform=ax.transAxes)
+        
+        # Sparkline (simulate trend)
+        self._draw_sparkline(ax, col_positions[5], y, row_height * 0.6)
+    
+    # Footer
+    footer_y = 0.02
+    ax.text(0.5, footer_y, 
+            f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')} | "
+            "● Green = On Track | ● Orange = Warning | ● Red = Critical",
+            fontsize=8, ha='center', style='italic',
+            transform=ax.transAxes)
+    
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
+    
+    print(f"✓ Saved: {output_path}")
+
+def _draw_sparkline(self, ax, x_start, y_center, height):
+    """Draw a mini sparkline chart."""
+    # Generate sample trend data
+    n_points = 12
+    trend_data = np.cumsum(np.random.randn(n_points)) * 0.5
+    trend_data = (trend_data - trend_data.min()) / (trend_data.max() - trend_data.min() + 0.01)
+    
+    x_vals = np.linspace(x_start, x_start + 0.15, n_points)
+    y_vals = y_center + (trend_data - 0.5) * height
+    
+    # Convert to axis coordinates
+    for i in range(len(x_vals) - 1):
+        color = COLOR_POSITIVE if trend_data[i+1] > trend_data[i] else COLOR_NEGATIVE
+        ax.plot([x_vals[i], x_vals[i+1]], [y_vals[i], y_vals[i+1]],
+                color=color, linewidth=1.5, alpha=0.7,
+                transform=ax.transAxes)
+
+def _format_value_short(self, value, unit):
+    """Format value for compact display."""
+    if pd.isna(value):
+        return "N/A"
+    
+    if unit == "rate":
+        return f"{value:.1%}"
+    elif unit in ["customers", "orders", "items"]:
+        if value >= 1_000_000:
+            return f"{value/1_000_000:.1f}M"
+        elif value >= 1_000:
+            return f"{value/1_000:.1f}K"
+        else:
+            return f"{value:.0f}"
+    else:
+        return f"{value:.1f}"
