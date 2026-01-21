@@ -244,38 +244,34 @@ class MetricEngine:
         """
         Get user-level KPI data with caching.
         
-        Runs prerequisite SQL queries if tables don't exist.
-        
         Returns:
             DataFrame with user-level metrics
         """
         if self._user_kpis_cache is not None:
             return self._user_kpis_cache
         
-        sql_dir = Path(__file__).parent.parent.parent / "sql"
-        
-        # Check if base_events table exists
+        # Query the user_kpis table (created by SQL)
+        # If it doesn't exist, create it by running the SQL
         try:
-            self.loader.conn.execute("SELECT COUNT(*) FROM base_events").fetchone()
+            user_kpis = self.loader.execute_sql("SELECT * FROM user_kpis")
         except:
-            # Need to create base_events first
-            base_events_sql = sql_dir / "base_events.sql"
-            if base_events_sql.exists():
-                with open(base_events_sql, 'r') as f:
-                    query = f.read()
-                self.loader.conn.execute(query)
-        
-        # Now load user KPIs
-        sql_file = sql_dir / "kpi_user_aggregates.sql"
-        
-        if not sql_file.exists():
-            raise FileNotFoundError(f"SQL file not found: {sql_file}")
-        
-        with open(sql_file, 'r') as f:
-            query = f.read()
-        
-        # Execute query
-        user_kpis = self.loader.execute_sql(query)
+            # Table doesn't exist, run SQL to create it
+            sql_dir = Path(__file__).parent.parent.parent / "sql"
+            
+            # Run base_events first
+            base_sql = sql_dir / "base_events.sql"
+            if base_sql.exists():
+                with open(base_sql, 'r') as f:
+                    self.loader.conn.execute(f.read())
+            
+            # Run user aggregates
+            user_sql = sql_dir / "kpi_user_aggregates.sql"
+            if user_sql.exists():
+                with open(user_sql, 'r') as f:
+                    self.loader.conn.execute(f.read())
+            
+            # Now query the created table
+            user_kpis = self.loader.execute_sql("SELECT * FROM user_kpis")
         
         # Cache result
         self._user_kpis_cache = user_kpis

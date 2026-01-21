@@ -85,6 +85,8 @@ order_with_products AS (
     INNER JOIN order_items_agg oi ON o.order_id = oi.order_id
 )
 
+-- Create persistent table for reuse
+CREATE TABLE IF NOT EXISTS base_events AS
 SELECT
     order_id,
     user_id,
@@ -98,4 +100,4 @@ SELECT
     order_reorder_rate,
     is_small_basket
 FROM order_with_products
-ORDER BY user_id, order_number
+ORDER BY user_id, order_number;

@@ -85,6 +85,8 @@ user_aggregates AS (
     GROUP BY user_id
 )
 
+-- Create persistent table
+CREATE TABLE IF NOT EXISTS user_kpis AS
 SELECT
     user_id,
     total_orders AS orders,
@@ -113,4 +115,4 @@ SELECT
     avg_items_per_order  -- Used for items_per_order in Python
     
 FROM user_aggregates
-ORDER BY user_id
+ORDER BY user_id;
